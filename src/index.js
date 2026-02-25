@@ -2,8 +2,9 @@ import express from "express";
 import cors from "cors";
  
 import userRoutes from "./routes/userRoutes.js"
+import categoryRoutes from "./routes/categoryRoutes.js"
 import { connectDB } from "./config/dbConnection.js";
- 
+ import transactionRoutes from "./routes/transactionRoutes.js";
 const app = express();
 const PORT = 8080;
  
@@ -13,7 +14,8 @@ connectDB()
 // Mount router
 
 app.use("/" , userRoutes)
-
+app.use("/" , categoryRoutes) 
+app.use("/" , transactionRoutes)
 app.get("/", (req, res) => {
   res.json({ message: "🚀 Budget server running on port 8080" });
 });
