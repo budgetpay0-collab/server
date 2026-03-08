@@ -1,4 +1,5 @@
 
+import Category from "../models/categoryModel.js";
 import Transaction  from "../models/transactionModel.js";
 
 /* ================= CREATE ================= */
@@ -21,6 +22,12 @@ export const createTransaction = async (req, res) => {
       transactionName,
       userId,
     });
+
+    // 🔥 Increase spent in category
+    await Category.findOneAndUpdate(
+      { userId, id: category },
+      { $inc: { spent: amount } }
+    );
 
     return res.status(201).json({
       success: true,
@@ -52,6 +59,12 @@ export const deleteTransaction = async (req, res) => {
       });
     }
 
+    // 🔥 Reduce spent
+    await Category.findOneAndUpdate(
+      { userId, id: transaction.category },
+      { $inc: { spent: -transaction.amount } }
+    );
+
     return res.status(200).json({
       success: true,
       message: "Transaction deleted successfully",
@@ -64,13 +77,36 @@ export const deleteTransaction = async (req, res) => {
     });
   }
 };
-
 /* ================= UPDATE ================= */
 
 export const updateTransaction = async (req, res) => {
   try {
     const { userId, id } = req.params;
     const { amount, category, transactionName } = req.body;
+
+    const oldTransaction = await Transaction.findOne({
+      _id: id,
+      userId,
+    });
+
+    if (!oldTransaction) {
+      return res.status(404).json({
+        success: false,
+        message: "Transaction not found",
+      });
+    }
+
+    // 🔥 Remove old amount from old category
+    await Category.findOneAndUpdate(
+      { userId, id: oldTransaction.category },
+      { $inc: { spent: -oldTransaction.amount } }
+    );
+
+    // 🔥 Add new amount to new category
+    await Category.findOneAndUpdate(
+      { userId, id: category },
+      { $inc: { spent: amount } }
+    );
 
     const updatedTransaction = await Transaction.findOneAndUpdate(
       { _id: id, userId },
@@ -81,13 +117,6 @@ export const updateTransaction = async (req, res) => {
       },
       { new: true }
     );
-
-    if (!updatedTransaction) {
-      return res.status(404).json({
-        success: false,
-        message: "Transaction not found",
-      });
-    }
 
     return res.status(200).json({
       success: true,
