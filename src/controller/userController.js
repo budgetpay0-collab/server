@@ -1,14 +1,18 @@
 import {User} from "../models/userModel.js"
 export async function fetchUserDetailsByID(req  , res  ) {
-    const {id} = req.params;
+  
+  const {id} = req.params;
     if(!id){
      return res.status(500).json("ID is required")
     }
+    console.log("fetchUsersDetails" , id)
     try{
-        const user = await User.findOneById(id)
-        if(user){
+        const user = await User.findById(id)
+        
+        if(!user){
             return res.status(404).json("No user Found")
         }
+        console.log("Returning user" , user)
         return res.status(200).json(user)
     }
     catch(err){
@@ -16,8 +20,8 @@ export async function fetchUserDetailsByID(req  , res  ) {
     }
 }
 
-export async function updateUserDetailsByID(req  , res  ) {
-    
+export async function updateUserDetailsByID(req, res) {
+  return updateUser(req, res);
 }
 
 export async function deleteUserDetaisByID(req  , res  ){
@@ -86,6 +90,7 @@ export const updateUser = async (req, res) => {
     "monthlySpend",
     "isActive",
     "lastLoginAt",
+    "goal",
   ];
 
   // Filter only allowed fields

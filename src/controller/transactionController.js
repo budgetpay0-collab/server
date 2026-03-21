@@ -7,7 +7,7 @@ import Transaction  from "../models/transactionModel.js";
 export const createTransaction = async (req, res) => {
   try {
     const { userId } = req.params;
-    const { amount, category, transactionName } = req.body;
+    const { amount, category, transactionName, dateOfTransaction } = req.body;
 
     if (!amount || !category || !transactionName) {
       return res.status(400).json({
@@ -20,6 +20,7 @@ export const createTransaction = async (req, res) => {
       amount,
       category,
       transactionName,
+      dateOfTransaction: dateOfTransaction || Date.now(),
       userId,
     });
 
@@ -82,7 +83,7 @@ export const deleteTransaction = async (req, res) => {
 export const updateTransaction = async (req, res) => {
   try {
     const { userId, id } = req.params;
-    const { amount, category, transactionName } = req.body;
+    const { amount, category, transactionName, dateOfTransaction } = req.body;
 
     const oldTransaction = await Transaction.findOne({
       _id: id,
@@ -114,6 +115,7 @@ export const updateTransaction = async (req, res) => {
         amount,
         category,
         transactionName,
+        ...(dateOfTransaction && { dateOfTransaction }),
       },
       { new: true }
     );

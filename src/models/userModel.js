@@ -56,6 +56,11 @@ const userSchema = new mongoose.Schema(
       type : Number,
       required : true,
       default : 0
+    },
+
+    goal : {
+      type : Number,
+      default : 0
     }
 
 

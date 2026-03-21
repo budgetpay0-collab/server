@@ -21,6 +21,12 @@ const transactionSchema = new mongoose.Schema(
       trim: true,
     },
 
+    dateOfTransaction: {
+      type: Date,
+      required: true,
+      default: Date.now,
+    },
+
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
