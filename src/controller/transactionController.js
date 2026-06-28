@@ -26,7 +26,7 @@ export const createTransaction = async (req, res) => {
 
     // 🔥 Increase spent in category
     await Category.findOneAndUpdate(
-      { userId, id: category },
+      { userId, name: category },
       { $inc: { spent: amount } }
     );
 
@@ -62,7 +62,7 @@ export const deleteTransaction = async (req, res) => {
 
     // 🔥 Reduce spent
     await Category.findOneAndUpdate(
-      { userId, id: transaction.category },
+      { userId, name: transaction.category },
       { $inc: { spent: -transaction.amount } }
     );
 
@@ -99,13 +99,13 @@ export const updateTransaction = async (req, res) => {
 
     // 🔥 Remove old amount from old category
     await Category.findOneAndUpdate(
-      { userId, id: oldTransaction.category },
+      { userId, name: oldTransaction.category },
       { $inc: { spent: -oldTransaction.amount } }
     );
 
     // 🔥 Add new amount to new category
     await Category.findOneAndUpdate(
-      { userId, id: category },
+      { userId, name: category },
       { $inc: { spent: amount } }
     );
 
